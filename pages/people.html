@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>People | Bjarke Ingels Group</title>
+  <meta name="description" content="Meet the team at Bjarke Ingels Group (BIG). Explore our partners, architects, and specialists shaping the future of architecture and design.">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .partner-featured {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    @media (max-width: 768px) {
+      .partner-featured { grid-template-columns: 1fr; }
+    }
+    .partner-featured-img {
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      position: relative;
+    }
+    .partner-featured-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter 0.5s ease, transform 0.6s ease;
+    }
+    .partner-featured:hover .partner-featured-img img {
+      filter: grayscale(0%);
+      transform: scale(1.03);
+    }
+    .partner-featured-content {
+      padding: 60px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .partner-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-mid);
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+    .partner-featured-name {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    .partner-featured-bio {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--gray-dark);
+      font-weight: 300;
+      max-width: 480px;
+    }
+
+    /* Separator between sections */
+    .people-divider {
+      height: 1px;
+      background: rgba(0,0,0,0.08);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor"></div>
+  <div class="cursor-ring"></div>
+
+  <nav>
+    <div class="nav-left">
+      <a href="../index.html" class="nav-logo">BIG</a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Projects</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="sustainability.html">Sustainability</a></li>
+        <li><a href="people.html" class="active">People</a></li>
+        <li><a href="careers.html">Careers</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <a href="mailto:press@big.dk" class="nav-contact">Contact</a>
+    </div>
+  </nav>
+
+  <main class="no-filter">
+    <div class="page-header">
+      <h1 class="anim-fade-up">People</h1>
+    </div>
+
+    <!-- Founder featured -->
+    <div class="partner-featured reveal">
+      <div class="partner-featured-img">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&h=900&fit=crop&facepad=2&faces=1" alt="Bjarke Ingels">
+      </div>
+      <div class="partner-featured-content">
+        <p class="partner-tag">Founder</p>
+        <h2 class="partner-featured-name">Bjarke Ingels</h2>
+        <p class="partner-featured-bio">Bjarke Ingels is the founder of BIG. His work is driven by the belief that architecture can be a tool for turning fiction into fact - merging pragmatic solutions with utopian possibilities. Since founding BIG in 2005, Ingels has led projects across architecture, urban design, product design, and research, becoming one of the most recognized architects of his generation. His practice embodies the principle of "hedonistic sustainability" — the idea that a sustainable future must also be an enjoyable one.</p>
+      </div>
+    </div>
+
+    <!-- Partners section -->
+    <div class="people-section reveal">
+      <p class="people-section-title">Partners</p>
+      <div class="people-grid">
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=400&fit=crop&facepad=2" alt="Kai-Uwe Bergmann" loading="lazy">
+          <p class="person-name">Kai-Uwe Bergmann</p>
+          <p class="person-title">Partner</p>
+          <p class="person-bio">Partner at BIG since 2009, leading business development and strategic partnerships across the Americas and Asia. Kai-Uwe oversees project development from initial client contact through construction delivery.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1494790108755-2616b612b830?w=300&h=400&fit=crop&facepad=2" alt="Sheela Maini Søgaard" loading="lazy">
+          <p class="person-name">Sheela Maini Søgaard</p>
+          <p class="person-title">Partner & CEO</p>
+          <p class="person-bio">Partner and CEO of BIG, Sheela is responsible for the firm's overall management, strategy, and culture across all global offices. She joined BIG in 2009 and has been instrumental in growing the practice from a Copenhagen studio to a global firm of 700+.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=400&fit=crop&facepad=2" alt="Thomas Christoffersen" loading="lazy">
+          <p class="person-name">Thomas Christoffersen</p>
+          <p class="person-title">Partner</p>
+          <p class="person-bio">Partner at BIG overseeing design leadership for major cultural, civic, and commercial projects across Europe. Thomas's work is characterized by a rigorous attention to material craft and contextual sensitivity.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop&facepad=2" alt="Agnieszka Skorupa" loading="lazy">
+          <p class="person-name">Agnieszka Skorupa</p>
+          <p class="person-title">Partner</p>
+          <p class="person-bio">Partner at BIG leading complex mixed-use and residential projects across Europe and North America. Agnieszka brings a systematic approach to the challenges of large-scale urban development.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=400&fit=crop&facepad=2" alt="Leon Rost" loading="lazy">
+          <p class="person-name">Leon Rost</p>
+          <p class="person-title">Partner</p>
+          <p class="person-bio">Partner at BIG since 2015, Leon leads the firm's work in the Middle East and Central Asia. He was instrumental in developing the concept for Gelephu Mindfulness City and continues to oversee masterplan-scale projects.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop&facepad=2" alt="Giulia Frittoli" loading="lazy">
+          <p class="person-name">Giulia Frittoli</p>
+          <p class="person-title">Partner & Head of Landscape</p>
+          <p class="person-bio">Partner and Head of Landscape at BIG, Giulia leads all landscape design projects across the practice. Her work integrates ecological thinking with spatial design, creating public spaces that support biodiversity and human connection to nature.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=400&fit=crop&facepad=2" alt="Beat Schenk" loading="lazy">
+          <p class="person-name">Beat Schenk</p>
+          <p class="person-title">Partner</p>
+          <p class="person-bio">Partner at BIG overseeing cultural, educational, and civic projects in Europe. Beat's work emphasizes the social and civic role of architecture as a catalyst for community life and identity.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=400&fit=crop&facepad=2" alt="Tracey Coffin" loading="lazy">
+          <p class="person-name">Tracey Coffin</p>
+          <p class="person-title">Technical Director</p>
+          <p class="person-bio">Technical Director at BIG, Tracey leads the firm's technical delivery across projects in New York and internationally. She brings deep expertise in construction documentation, building systems integration, and project delivery.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="people-divider"></div>
+
+    <!-- Associates section -->
+    <div class="people-section reveal">
+      <p class="people-section-title">Associates</p>
+      <div class="people-grid">
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop&facepad=2" alt="Pauline Lavie-Luong" loading="lazy">
+          <p class="person-name">Pauline Lavie-Luong</p>
+          <p class="person-title">Associate, Director of Interiors</p>
+          <p class="person-bio">Director of Interiors and Associate at BIG, Pauline leads interior design across the firm's residential, hospitality, and workplace projects, bringing a refined sensibility to spatial sequencing and material selection.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=300&h=400&fit=crop&facepad=2" alt="Jakob Lange" loading="lazy">
+          <p class="person-name">Jakob Lange</p>
+          <p class="person-title">Associate</p>
+          <p class="person-bio">Associate at BIG leading product design and research initiatives. Jakob explores the intersection of architecture and industrial design, overseeing collaborations with manufacturers across furniture, lighting, and consumer goods.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&h=400&fit=crop&facepad=2" alt="David Zahle" loading="lazy">
+          <p class="person-name">David Zahle</p>
+          <p class="person-title">Associate</p>
+          <p class="person-bio">Associate at BIG overseeing sustainability strategy and green building certification across the practice's portfolio. David has led BIG's integration of environmental performance goals into the design process since 2008.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&h=400&fit=crop&facepad=2" alt="Nanna Gyldholm Møller" loading="lazy">
+          <p class="person-name">Nanna Gyldholm Møller</p>
+          <p class="person-title">Associate</p>
+          <p class="person-bio">Associate at BIG working across a wide range of typologies including cultural buildings, civic infrastructure, and masterplanning. Based in Copenhagen, Nanna has led several award-winning competitions and built projects in Scandinavia.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1521119989659-a83eee488004?w=300&h=400&fit=crop&facepad=2" alt="Andreas Klok Pedersen" loading="lazy">
+          <p class="person-name">Andreas Klok Pedersen</p>
+          <p class="person-title">Associate</p>
+          <p class="person-bio">Associate at BIG based in Copenhagen, Andreas oversees key architectural projects in the Nordic region and Europe. His work spans education, culture, and urban housing, with a focus on contextual sensitivity.</p>
+        </div>
+
+        <div class="person-card">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=400&fit=crop&facepad=2" alt="Stine Sandstrøm Christensen" loading="lazy">
+          <p class="person-name">Stine Sandstrøm Christensen</p>
+          <p class="person-title">Managing Director, CPH</p>
+          <p class="person-bio">Managing Director of BIG Copenhagen, Stine oversees the day-to-day operations of the Copenhagen office. She leads efforts to strengthen BIG's Danish identity and international presence in global architecture export.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h4>Email</h4>
+        <a href="mailto:newbiz@big.dk">newbiz@big.dk — New Projects</a>
+        <a href="mailto:press@big.dk">press@big.dk — Press</a>
+        <a href="mailto:lectures@big.dk">lectures@big.dk — Lectures</a>
+      </div>
+      <div class="footer-section">
+        <h4>Copenhagen</h4>
+        <p>Sundkaj 165, 2150 Nordhavn</p>
+        <a href="mailto:cph@big.dk">cph@big.dk</a>
+        <p>+45 7221 7227</p>
+      </div>
+      <div class="footer-section">
+        <h4>New York</h4>
+        <p>45 Main Street, 9th Floor<br>Brooklyn, NY 11201</p>
+        <a href="mailto:nyc@big.dk">nyc@big.dk</a>
+      </div>
+      <div class="footer-section">
+        <h4>Social</h4>
+        <a href="https://www.instagram.com/big_builds/" target="_blank">Instagram</a>
+        <a href="https://x.com/BIG_Architects" target="_blank">X / Twitter</a>
+        <a href="https://www.linkedin.com/company/bjarke-ingels-group/" target="_blank">LinkedIn</a>
+        <a href="https://vimeo.com/user1395824" target="_blank">Vimeo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Whistleblower Policy</a>
+        <a href="#">Annual Sustainability Report</a>
+      </div>
+      <button class="back-to-top">Back to top ↑</button>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

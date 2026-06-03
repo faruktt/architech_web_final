@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BIG | Bjarke Ingels Group</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+      background:#fff;color:#000;
+      cursor:none;overflow-x:hidden;
+    }
+
+    /* ── CURSOR ── */
+    #cur{width:8px;height:8px;background:#000;border-radius:50%;
+      position:fixed;top:0;left:0;pointer-events:none;z-index:99999;
+      transform:translate(-50%,-50%);transition:width .15s,height .15s,background .15s;}
+    #ring{width:30px;height:30px;border:1px solid rgba(0,0,0,.5);border-radius:50%;
+      position:fixed;top:0;left:0;pointer-events:none;z-index:99998;
+      transform:translate(-50%,-50%);transition:width .25s,height .25s;}
+    body.hov #cur{width:12px;height:12px;}
+    body.hov #ring{width:46px;height:46px;}
+
+    /* ── NAV ── */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:2000;
+      height:60px;background:#fff;
+      display:flex;align-items:center;
+      padding:0 24px;
+    }
+
+    /* hamburger */
+    .ham{
+      display:flex;flex-direction:column;gap:5px;
+      cursor:none;padding:8px;margin-right:8px;
+      background:none;border:none;z-index:2010;
+      position:relative;
+    }
+    .ham span{display:block;width:22px;height:1.5px;background:#000;transition:all .28s;}
+
+    /* dropdown menu */
+    .nav-menu{
+      position:absolute;top:60px;left:0;
+      background:#fff;padding:0 32px 28px 32px;
+      min-width:200px;
+      display:none;
+      flex-direction:column;gap:0;
+      border-right:1px solid rgba(0,0,0,.07);
+      border-bottom:1px solid rgba(0,0,0,.07);
+    }
+    .nav-menu.open{display:flex;}
+    .nav-menu a{
+      display:block;
+      font-size:13px;font-weight:400;letter-spacing:.05em;
+      text-transform:uppercase;color:#aaa;
+      text-decoration:none;padding:10px 0;
+      border-bottom:1px solid rgba(0,0,0,.05);
+      transition:color .2s;
+      cursor:none;
+    }
+    .nav-menu a:last-child{border-bottom:none;}
+    .nav-menu a:hover{color:#000;}
+
+    /* cat links */
+    .cat-bar{
+      flex:1;display:flex;align-items:center;justify-content:center;
+      list-style:none;gap:0;
+    }
+    .cat-bar li a{
+      display:block;padding:0 28px;
+      font-size:11px;font-weight:400;letter-spacing:.12em;
+      text-transform:uppercase;color:#000;text-decoration:none;
+      line-height:60px;white-space:nowrap;
+      transition:opacity .2s;cursor:none;
+    }
+    .cat-bar li a:hover,.cat-bar li a.active{opacity:.4;}
+
+    .nav-right{
+      font-size:11px;letter-spacing:.1em;
+      text-transform:uppercase;display:flex;align-items:center;gap:6px;
+      cursor:none;
+    }
+    .nav-right svg{width:13px;height:13px;flex-shrink:0;}
+
+    /* ── PROJECT LIST ── */
+    main{padding-top:60px;}
+
+    .proj-row{
+      display:grid;
+      grid-template-columns:540px 1fr;
+      border-bottom:1px solid rgba(0,0,0,.07);
+      cursor:none;
+      position:relative;
+      overflow:hidden;
+      opacity:0;transform:translateY(14px);
+      transition:opacity .5s ease,transform .5s ease;
+      text-decoration:none;color:#000;
+    }
+    .proj-row.vis{opacity:1;transform:translateY(0);}
+    .proj-row[data-hidden="true"]{display:none;}
+
+    /* left */
+    .proj-left{
+      display:flex;flex-direction:column;
+      align-items:flex-end;justify-content:center;
+      padding:40px 52px 40px 60px;
+      text-align:right;
+      position:relative;z-index:2;
+      min-height:260px;
+    }
+    .proj-icon{
+      width:52px;height:52px;
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:16px;
+    }
+    .proj-icon img{max-width:52px;max-height:52px;object-fit:contain;}
+    .proj-name{font-size:15px;font-weight:400;letter-spacing:-.01em;line-height:1.25;margin-bottom:6px;}
+    .proj-loc{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#888;}
+
+    /* right image */
+    .proj-img{overflow:hidden;position:relative;}
+    .proj-img img{
+      width:40%;height:100%;
+      object-fit:cover;display:block;
+      transition:transform .65s cubic-bezier(.25,.46,.45,.94);
+      min-height:260px;
+    }
+    .proj-row:hover .proj-img img{transform:scale(1.04);}
+
+    /* ── PROJECT DETAIL PANEL ── */
+    .detail-panel{
+      display:none;
+      grid-column:1/-1;
+      grid-template-columns:220px 1fr 300px 260px;
+      background:#fff;
+      border-bottom:1px solid rgba(0,0,0,.07);
+      position:relative;
+      overflow:hidden;
+      max-height:0;
+    }
+    .detail-panel.open{
+      display:grid;
+      max-height:none;
+      animation:slideDown .4s ease forwards;
+    }
+    @keyframes slideDown{
+      from{opacity:0;transform:translateY(-12px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* detail: far left metadata */
+    .detail-meta{
+      padding:40px 24px 40px 32px;
+      border-right:1px solid rgba(0,0,0,.07);
+      display:flex;flex-direction:column;gap:24px;
+    }
+    .detail-meta .proj-icon{margin-bottom:8px;}
+    .detail-meta .proj-name{font-size:14px;}
+    .detail-meta .proj-loc{margin-bottom:12px;}
+    .meta-block label{
+      display:block;font-size:8px;letter-spacing:.12em;
+      text-transform:uppercase;color:#aaa;margin-bottom:3px;
+    }
+    .meta-block p{font-size:11px;font-weight:400;text-transform:uppercase;letter-spacing:.04em;line-height:1.4;}
+    .share-row{display:flex;gap:10px;margin-top:8px;}
+    .share-row a{
+      width:24px;height:24px;border:1px solid #ddd;
+      display:flex;align-items:center;justify-content:center;
+      font-size:9px;color:#000;text-decoration:none;cursor:none;
+      transition:background .2s,color .2s;
+    }
+    .share-row a:hover{background:#000;color:#fff;}
+
+    /* detail: big center image */
+    .detail-img-main{
+      overflow:hidden;position:relative;
+      min-height:500px;
+    }
+    .detail-img-main img{
+      width:100%;height:100%;
+      object-fit:cover;display:block;
+    }
+
+    /* detail: description */
+    .detail-desc{
+      padding:48px 32px;
+      font-size:12px;line-height:1.85;color:#333;font-weight:300;
+      overflow-y:auto;max-height:520px;
+      border-left:1px solid rgba(0,0,0,.07);
+    }
+
+    /* detail: side image */
+    .detail-img-side{
+      overflow:hidden;position:relative;
+      border-left:1px solid rgba(0,0,0,.07);
+    }
+    .detail-img-side img{
+      width:100%;height:100%;
+      object-fit:cover;display:block;
+    }
+
+    /* close btn */
+    .detail-close{
+      position:absolute;top:16px;right:16px;z-index:10;
+      width:32px;height:32px;border:none;background:rgba(255,255,255,.9);
+      font-size:18px;cursor:none;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s;
+    }
+    .detail-close:hover{background:#000;color:#fff;}
+
+    /* ── FOOTER ── */
+    footer{background:#000;color:#fff;padding:56px 40px 36px;}
+    .ft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:40px;margin-bottom:44px;}
+    .ft-col h5{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+      margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:4px;}
+    .ft-col h5::after{content:'+';opacity:.4;}
+    .ft-col a,.ft-col p{
+      display:block;font-size:11px;font-weight:300;
+      color:rgba(255,255,255,.5);text-decoration:none;line-height:2;
+      transition:color .2s;
+    }
+    .ft-col a:hover{color:#fff;}
+    .ft-bot{
+      border-top:1px solid rgba(255,255,255,.1);padding-top:18px;
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    }
+    .ft-bot a{font-size:10px;color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;}
+    .ft-bot a:hover{color:#fff;}
+    .btt{font-size:10px;color:rgba(255,255,255,.3);background:none;border:none;
+      cursor:none;font-family:inherit;transition:color .2s;}
+    .btt:hover{color:#fff;}
+
+    @media(max-width:960px){
+      .proj-row{grid-template-columns:280px 1fr;}
+      .proj-left{padding:28px 28px 28px 32px;}
+      .detail-panel{grid-template-columns:1fr;}
+      .detail-img-side{display:none;}
+    }
+    @media(max-width:600px){
+      .proj-row{grid-template-columns:1fr;grid-template-rows:auto 200px;}
+      .proj-left{align-items:flex-start;text-align:left;padding:20px;}
+      .cat-bar{display:none;}
+    }
+  </style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="ring"></div>
+
+<nav>
+  <!-- Hamburger -->
+  <div style="position:relative;">
+    <button class="ham" id="hamBtn">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-menu" id="navMenu">
+      <a href="index.html">PROJECTS</a>
+      <a href="pages/news.html">NEWS</a>
+      <a href="pages/about.html">ABOUT</a>
+      <a href="pages/sustainability.html">SUSTAINABILITY</a>
+      <a href="pages/people.html">PEOPLE</a>
+      <a href="pages/careers.html">CAREERS</a>
+      <a href="mailto:newbiz@big.dk">CONTACT</a>
+    </div>
+  </div>
+
+  <!-- Category nav -->
+  <ul class="cat-bar">
+    <li><a href="#" data-filter="architecture">ARCHITECTURE</a></li>
+    <li><a href="#" data-filter="interiors">INTERIORS</a></li>
+    <li><a href="#" data-filter="landscape">LANDSCAPE</a></li>
+    <li><a href="#" data-filter="planning">PLANNING</a></li>
+    <li><a href="#" data-filter="products">PRODUCTS</a></li>
+  </ul>
+
+  <!-- Right label (changes per active category) -->
+  <div class="nav-right" id="navLabel">
+    <svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#000" stroke-width="1.2"/><line x1="9.5" y1="9.5" x2="13" y2="13" stroke="#000" stroke-width="1.2"/></svg>
+    <span id="labelText">EDUCATION</span>
+  </div>
+</nav>
+
+<main id="mainList">
+
+  <!-- ─── PROJECT ROWS ─── -->
+  <!-- Each .proj-row is followed by a .detail-panel (hidden by default) -->
+
+  <div class="proj-row" data-cat="architecture" data-idx="0">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/TPAC_ICON-01.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Tennessee Performing Arts Center</div>
+      <div class="proj-loc">Nashville, United States</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=960&h=540&fit=crop" alt="TPAC" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="0">
+    <div class="detail-meta">
+      <div><div class="proj-icon"><img src="https://media.big.dk/TPAC_ICON-01.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Tennessee Performing Arts Center</div>
+      <div class="proj-loc">Nashville, United States</div></div>
+      <div class="meta-block"><label>Client</label><p>Tennessee Performing Arts Center</p></div>
+      <div class="meta-block"><label>Typology</label><p>Culture</p></div>
+      <div class="meta-block"><label>Size M²/FT²</label><p>28521 / 307000</p></div>
+      <div class="meta-block"><label>Status</label><p>In Design</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=960&h=540&fit=crop" alt="TPAC"></div>
+    <div class="detail-desc">The new Tennessee Performing Arts Center (TPAC) – designed by BIG, William Rawn Associates, and HASTINGS Architecture – extends the vibrancy of downtown Nashville across the Cumberland River, emerging as a cultural anchor for the city's reenergized East Bank. Designed to welcome the community from all sides, with the performance venues clustered at its core, the new TPAC supports a range of artistic programming while building upon Nashville's rich legacy in the arts. Construction is expected to begin in 2027, with a projected opening in 2030.<br><br>Situated on a waterfront site neighboring Cumberland Park and the Tennessee Titans Nissan Stadium, the new TPAC includes four performance spaces – the multi-function Grand Broadway theater; a dance and opera hall; a flexible black box theater; and an intimate cabaret space – as well as rehearsal studios and classrooms.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=700&fit=crop" alt="TPAC detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="1">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2024/05/NAH_ICON.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">NOT A HOTEL Setouchi</div>
+      <div class="proj-loc">Sagishima, Japan</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=960&h=540&fit=crop" alt="NOT A HOTEL" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="1">
+    <div class="detail-meta">
+      <div><div class="proj-icon"><img src="https://media.big.dk/2024/05/NAH_ICON.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">NOT A HOTEL Setouchi</div>
+      <div class="proj-loc">Sagishima, Japan</div></div>
+      <div class="meta-block"><label>Client</label><p>NOT A HOTEL Corporation</p></div>
+      <div class="meta-block"><label>Typology</label><p>Hospitality</p></div>
+      <div class="meta-block"><label>Size M²</label><p>2400</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2024</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&h=700&fit=crop" alt="NOT A HOTEL"></div>
+    <div class="detail-desc">NOT A HOTEL Setouchi is a private island retreat nestled in Japan's Seto Inland Sea. The project transforms the existing landscape of Sagishima into a seamless living environment where architecture and nature are inseparable. Drawing from the island's agricultural heritage, the design references the terraced hillsides and stone walls built by generations of islanders.<br><br>The complex includes private villas, communal gathering spaces, and a series of outdoor terraces that cascade toward the sea. Materials are sourced locally and the construction employs traditional Japanese craftsmanship alongside contemporary structural engineering.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1480796927426-f609979314bd?w=400&h=700&fit=crop" alt="Setouchi detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="planning" data-idx="2">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_22302_N34.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Gastronomy Open Ecosystem</div>
+      <div class="proj-loc">San Sebastian, Spain</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=960&h=540&fit=crop" alt="Gastronomy" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="2">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Gastronomy Open Ecosystem</div>
+      <div class="proj-loc">San Sebastian, Spain</div></div>
+      <div class="meta-block"><label>Typology</label><p>Culture / Planning</p></div>
+      <div class="meta-block"><label>Status</label><p>In Design</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&h=700&fit=crop" alt="Gastronomy"></div>
+    <div class="detail-desc">The Gastronomy Open Ecosystem in San Sebastian is a new cultural institution dedicated to food as art, science, and heritage. Situated on the coastline of the Basque Country, the project creates a network of indoor and outdoor spaces that celebrate the region's extraordinary culinary culture.<br><br>The building opens toward the sea on all sides, dissolving the boundary between interior and exterior. Public promenades, experimental kitchens, research facilities, and exhibition halls are arranged along a continuous loop that invites visitors to explore freely.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=400&h=700&fit=crop" alt="Gastronomy detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="3">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N50.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Google Bay View</div>
+      <div class="proj-loc">Mountain View, United States</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=960&h=540&fit=crop" alt="Google Bay View" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="3">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Google Bay View</div>
+      <div class="proj-loc">Mountain View, United States</div></div>
+      <div class="meta-block"><label>Client</label><p>Google LLC</p></div>
+      <div class="meta-block"><label>Typology</label><p>Office</p></div>
+      <div class="meta-block"><label>Size M²/FT²</label><p>100,000 / 1,076,000</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2022</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=1200&h=700&fit=crop" alt="Google Bay View"></div>
+    <div class="detail-desc">Located on a 42-acre site at the NASA Ames Research Center, Google's Bay View campus consists of three buildings totaling 1.1 million square feet and approximately 18 acres of open space. The all-electric campus has achieved a LEED-NC v4 Platinum certification.<br><br>On the exterior, the buildings feature a first-of-its-kind "dragonscale" solar skin roof equipped with 50,000 silver solar panels that generate nearly four megawatts of energy, approximately 40% of the buildings' annual energy use. The campus also includes 17.3 acres of high-value natural habitat areas.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=400&h=700&fit=crop" alt="Google Bay View detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="4">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N16.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">CopenHill</div>
+      <div class="proj-loc">Copenhagen, Denmark</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=960&h=540&fit=crop" alt="CopenHill" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="4">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">CopenHill</div>
+      <div class="proj-loc">Copenhagen, Denmark</div></div>
+      <div class="meta-block"><label>Client</label><p>Amager Ressourcecenter</p></div>
+      <div class="meta-block"><label>Typology</label><p>Infrastructure / Culture</p></div>
+      <div class="meta-block"><label>Size M²</label><p>41,000</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2019</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=1200&h=700&fit=crop" alt="CopenHill"></div>
+    <div class="detail-desc">CopenHill – officially known as the Amager Bakke – is a waste-to-energy plant and urban recreation center. The facility is surmounted by a ski slope, hiking trail, and the world's tallest climbing wall – transforming what is typically an industrial facility into a vibrant public amenity for Copenhagen residents.<br><br>The plant processes 400,000 tonnes of waste per year and generates enough electricity for 30,000 homes and district heating for 72,000 households. Every 100 kg of CO₂ emitted, a smoke ring is released from the chimney as a reminder of the environmental impact of consumption.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1467533003447-e295ff1b0435?w=400&h=700&fit=crop" alt="CopenHill detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="5">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N59.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">One High Line</div>
+      <div class="proj-loc">New York, United States</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=960&h=540&fit=crop" alt="One High Line" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="5">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">One High Line</div>
+      <div class="proj-loc">New York, United States</div></div>
+      <div class="meta-block"><label>Client</label><p>HFZ Capital Group</p></div>
+      <div class="meta-block"><label>Typology</label><p>Residential</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2023</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=1200&h=700&fit=crop" alt="One High Line"></div>
+    <div class="detail-desc">One High Line rises as two interlocking towers, one 36 stories and the other 26 stories, on Manhattan's West Side adjacent to the High Line. The project comprises 236 luxury condominium residences, a private club with amenities across three floors, and a ground-floor public plaza.<br><br>The two towers tilt toward each other in opposite directions, creating a dynamic skyline silhouette while maximizing river views and natural light for all residences.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=400&h=700&fit=crop" alt="One High Line detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="planning" data-idx="6">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2023/12/BHUTAN_ICON-1.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Gelephu Mindfulness City</div>
+      <div class="proj-loc">Gelephu, Bhutan</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=960&h=540&fit=crop" alt="Gelephu" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="6">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Gelephu Mindfulness City</div>
+      <div class="proj-loc">Gelephu, Bhutan</div></div>
+      <div class="meta-block"><label>Client</label><p>Royal Government of Bhutan</p></div>
+      <div class="meta-block"><label>Typology</label><p>Masterplan / Urban Design</p></div>
+      <div class="meta-block"><label>Size</label><p>1,000 km²</p></div>
+      <div class="meta-block"><label>Status</label><p>In Progress</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=1200&h=700&fit=crop" alt="Gelephu"></div>
+    <div class="detail-desc">Gelephu Mindfulness City is a new city commissioned by His Majesty the King of Bhutan, guided by the principle of Gross National Happiness. Spanning 1,000 km² in southern Bhutan, the city prioritizes ecological health, cultural preservation, and human wellbeing.<br><br>With a six-story building height limit, abundant green corridors, and complete reliance on renewable energy, Gelephu demonstrates that the cities of the future can be more humane, more connected to nature, and more equitable than those of the past.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=700&fit=crop" alt="Gelephu detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="landscape" data-idx="7">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/SUK-icon.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Superkilen</div>
+      <div class="proj-loc">Copenhagen, Denmark</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=960&h=540&fit=crop" alt="Superkilen" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="7">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Superkilen</div>
+      <div class="proj-loc">Copenhagen, Denmark</div></div>
+      <div class="meta-block"><label>Typology</label><p>Landscape / Urban</p></div>
+      <div class="meta-block"><label>Size M²</label><p>30,000</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2012</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1200&h=700&fit=crop" alt="Superkilen"></div>
+    <div class="detail-desc">Superkilen is a radical public square – a community park exhibiting objects from the many cultures that call the neighborhood home. Spanning over 750m through one of Copenhagen's most ethnically diverse and socially challenged neighborhoods, Superkilen is divided into three zones: The Red Square, The Black Market, and The Green Park.<br><br>Each zone includes urban furniture and fixtures gathered from the countries of origin of the neighborhood's residents – from a Yemeni shade pavilion to a Moroccan fountain to Thai boxing rings.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=700&fit=crop" alt="Superkilen detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="8">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/A_220303_N75-4.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">The Twist</div>
+      <div class="proj-loc">Jevnaker, Norway</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?w=960&h=540&fit=crop" alt="The Twist" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="8">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">The Twist</div>
+      <div class="proj-loc">Jevnaker, Norway</div></div>
+      <div class="meta-block"><label>Typology</label><p>Culture / Bridge</p></div>
+      <div class="meta-block"><label>Size M²</label><p>1,000</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2019</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?w=1200&h=700&fit=crop" alt="The Twist"></div>
+    <div class="detail-desc">The Twist is a hybrid spanning several traditional categories: museum, bridge, and inhabitable sculpture. As a bridge, it reconfigures the Kistefos sculpture park, turning the visitor journey into a continuous loop.<br><br>The building rotates 90 degrees as it crosses the river, so that one end faces horizontally toward the forest and the other faces vertically toward the sky, creating dramatically different spatial experiences within a single compact structure.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=400&h=700&fit=crop" alt="The Twist detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="9">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N149.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">The Spiral</div>
+      <div class="proj-loc">New York, United States</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=960&h=540&fit=crop" alt="The Spiral" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="9">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">The Spiral</div>
+      <div class="proj-loc">New York, United States</div></div>
+      <div class="meta-block"><label>Client</label><p>Tishman Speyer</p></div>
+      <div class="meta-block"><label>Typology</label><p>Office</p></div>
+      <div class="meta-block"><label>Size M²/FT²</label><p>167,225 / 2,100,000</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2022</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=1200&h=700&fit=crop" alt="The Spiral"></div>
+    <div class="detail-desc">The Spiral rises 66 stories and 1,005 feet above Hudson Yards on Manhattan's Far West Side. A cascade of terraced outdoor gardens spirals around the tower from base to top, connecting every floor with the High Line below and the sky above.<br><br>The cascading greenery gives the tower a distinctive sculptural quality that changes with the seasons, while providing tenants on every floor with direct access to fresh air and outdoor space – a rare commodity in the heart of Midtown Manhattan.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=400&h=700&fit=crop" alt="The Spiral detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="architecture" data-idx="10">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N83.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">LEGO Brand House</div>
+      <div class="proj-loc">Billund, Denmark</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=960&h=540&fit=crop" alt="LEGO" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="10">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">LEGO Brand House</div>
+      <div class="proj-loc">Billund, Denmark</div></div>
+      <div class="meta-block"><label>Client</label><p>The LEGO Group</p></div>
+      <div class="meta-block"><label>Typology</label><p>Culture</p></div>
+      <div class="meta-block"><label>Status</label><p>In Design</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=700&fit=crop" alt="LEGO"></div>
+    <div class="detail-desc">The LEGO Brand House in Billund will serve as the headquarters and creative home of the LEGO Group. The building expresses the fundamental building block of LEGO – the brick – through its architecture, creating a playful yet functional workplace that celebrates creativity and imagination at every turn.<br><br>The design integrates public spaces, exhibition areas, and collaborative workspaces that blur the boundary between work and play.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=400&h=700&fit=crop" alt="LEGO detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="products" data-idx="11">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/08/P-Stellar-Nebula-icon_web.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Stellar Nebula Lamps</div>
+      <div class="proj-loc">Artemide</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=960&h=540&fit=crop" alt="Stellar Nebula" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="11">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Stellar Nebula Lamps</div>
+      <div class="proj-loc">Artemide</div></div>
+      <div class="meta-block"><label>Client</label><p>Artemide</p></div>
+      <div class="meta-block"><label>Typology</label><p>Product Design</p></div>
+      <div class="meta-block"><label>Status</label><p>In Production</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=700&fit=crop" alt="Stellar Nebula"></div>
+    <div class="detail-desc">The Stellar Nebula lamps for Artemide are inspired by the cosmic phenomena of nebulae – vast clouds of gas and dust where new stars are born. The lamp creates a diffused, atmospheric glow that evokes the luminous haze of deep space while remaining intimately scaled for domestic interiors.<br><br>Available in several configurations and finishes, the Stellar Nebula family ranges from pendant to floor lamp, each sharing the same organic, enveloping quality of light.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=700&fit=crop" alt="Stellar Nebula detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+  <div class="proj-row" data-cat="interiors" data-idx="12">
+    <div class="proj-left">
+      <div class="proj-icon"><img src="https://media.big.dk/2022/06/19_A_220303_N103.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="proj-name">Noma 2.0</div>
+      <div class="proj-loc">Copenhagen, Denmark</div>
+    </div>
+    <div class="proj-img"><img src="https://images.unsplash.com/photo-1467987506553-8f3916508521?w=960&h=540&fit=crop" alt="Noma" loading="lazy"></div>
+  </div>
+  <div class="detail-panel" data-for="12">
+    <div class="detail-meta">
+      <div><div class="proj-icon"></div>
+      <div class="proj-name">Noma 2.0</div>
+      <div class="proj-loc">Copenhagen, Denmark</div></div>
+      <div class="meta-block"><label>Client</label><p>Noma</p></div>
+      <div class="meta-block"><label>Typology</label><p>Hospitality / Interiors</p></div>
+      <div class="meta-block"><label>Status</label><p>Completed 2018</p></div>
+      <div><label style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:8px;display:block;">Share</label>
+      <div class="share-row"><a href="#">&#9632;</a><a href="#">f</a><a href="#">in</a><a href="#">✕</a></div></div>
+    </div>
+    <div class="detail-img-main"><img src="https://images.unsplash.com/photo-1467987506553-8f3916508521?w=1200&h=700&fit=crop" alt="Noma"></div>
+    <div class="detail-desc">Noma 2.0 is a new campus for the world's most celebrated restaurant, designed as a village of individual buildings set in a former naval warehouse district on the waterfront of Copenhagen. The campus includes the main restaurant, a test kitchen, a fermentation lab, a greenhouse, and staff housing.<br><br>Each structure is distinct yet connected, built from reclaimed materials that reflect the restaurant's philosophy of using only what is local, seasonal, and authentic.</div>
+    <div class="detail-img-side"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=700&fit=crop" alt="Noma detail"></div>
+    <button class="detail-close">✕</button>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="ft-grid">
+    <div class="ft-col">
+      <h5>Email</h5>
+      <a href="mailto:newbiz@big.dk">newbiz@big.dk</a>
+      <p style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.2;margin-bottom:8px">New Projects</p>
+      <a href="mailto:press@big.dk">press@big.dk</a>
+      <p style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.2;margin-bottom:8px">Press</p>
+      <a href="mailto:lectures@big.dk">lectures@big.dk</a>
+      <p style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.2;margin-bottom:8px">Lectures</p>
+      <a href="mailto:exhibitions@big.dk">exhibitions@big.dk</a>
+      <p style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.2">Exhibitions</p>
+    </div>
+    <div class="ft-col">
+      <h5>Office</h5>
+      <p>Copenhagen<br>Sundkaj 165, 2150 Nordhavn<br>+45 7221 7227</p>
+      <a href="mailto:cph@big.dk">cph@big.dk</a>
+      <p style="margin-top:12px">London<br>1 Finsbury Avenue EC2M 2PF</p>
+      <a href="mailto:lon@big.dk">lon@big.dk</a>
+    </div>
+    <div class="ft-col">
+      <h5 style="visibility:hidden">.</h5>
+      <p>New York<br>45 Main Street, 9th Floor<br>Brooklyn, NY 11201<br>+1 347 549 4141</p>
+      <a href="mailto:nyc@big.dk">nyc@big.dk</a>
+      <p style="margin-top:12px">Barcelona<br>Ronda de Sant Pere, 56</p>
+      <a href="mailto:bcn@big.dk">bcn@big.dk</a>
+    </div>
+    <div class="ft-col">
+      <h5 style="visibility:hidden">.</h5>
+      <p>Los Angeles<br>310 Wilshire Blvd, 2nd floor<br>Santa Monica, CA 90401</p>
+      <a href="mailto:lax@big.dk">lax@big.dk</a>
+      <p style="margin-top:12px">Shanghai<br>363 Chang Ping Road, FL 6</p>
+      <a href="mailto:sha@big.dk">sha@big.dk</a>
+    </div>
+    <div class="ft-col">
+      <h5>Social</h5>
+      <a href="https://instagram.com/big_builds" target="_blank">Instagram</a>
+      <a href="https://x.com/BIG_Architects" target="_blank">X</a>
+      <a href="https://linkedin.com/company/bjarke-ingels-group" target="_blank">LinkedIn</a>
+      <a href="https://vimeo.com/user1395824" target="_blank">Vimeo</a>
+      <a href="https://facebook.com/bjarke.ingels.group" target="_blank">Facebook</a>
+    </div>
+    <div class="ft-col">
+      <h5>Legal</h5>
+      <a href="#">Anti-Slavery Statement</a>
+      <a href="#">Privacy Policy 2024</a>
+      <a href="#">UN Global Compact</a>
+      <a href="#">Sustainability Report</a>
+      <a href="#">Whistleblower Policy</a>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Whistleblower Policy</a>
+      <a href="#">Annual Sustainability Report, 2023</a>
+    </div>
+    <button class="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top ↑</button>
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+(function raf(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(raf);})();
+document.querySelectorAll('a,button,.proj-row').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+// ── HAMBURGER ──
+const hamBtn=document.getElementById('hamBtn'),navMenu=document.getElementById('navMenu');
+let menuOpen=false;
+hamBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  menuOpen=!menuOpen;
+  navMenu.classList.toggle('open',menuOpen);
+  const s=hamBtn.querySelectorAll('span');
+  if(menuOpen){
+    s[0].style.transform='translateY(6.5px) rotate(45deg)';
+    s[1].style.opacity='0';
+    s[2].style.transform='translateY(-6.5px) rotate(-45deg)';
+  } else {
+    s.forEach(x=>{x.style.transform='';x.style.opacity='';});
+  }
+});
+document.addEventListener('click',()=>{
+  if(menuOpen){
+    menuOpen=false;navMenu.classList.remove('open');
+    hamBtn.querySelectorAll('span').forEach(x=>{x.style.transform='';x.style.opacity='';});
+  }
+});
+navMenu.addEventListener('click',e=>e.stopPropagation());
+
+// ── CATEGORY FILTER ──
+const catLinks=document.querySelectorAll('.cat-bar a[data-filter]');
+const rows=document.querySelectorAll('.proj-row');
+const labelText=document.getElementById('labelText');
+const labelMap={architecture:'SUSTAINABILITY',interiors:'MUSEUM',landscape:'RESEARCH',planning:'EDUCATION',products:'DESIGN'};
+let activeFilter=null;
+
+catLinks.forEach(link=>{
+  link.addEventListener('click',e=>{
+    e.preventDefault();
+    const f=link.dataset.filter;
+    if(activeFilter===f){
+      activeFilter=null;
+      catLinks.forEach(l=>l.classList.remove('active'));
+      rows.forEach(r=>r.removeAttribute('data-hidden'));
+      labelText.textContent='EDUCATION';
+    } else {
+      activeFilter=f;
+      catLinks.forEach(l=>l.classList.toggle('active',l.dataset.filter===f));
+      rows.forEach(r=>{ r.dataset.hidden=r.dataset.cat!==f?'true':'false'; });
+      labelText.textContent=labelMap[f]||'EDUCATION';
+      // close any open detail
+      document.querySelectorAll('.detail-panel.open').forEach(p=>{p.classList.remove('open');});
+    }
+  });
+});
+
+// ── PROJECT ROW CLICK → DETAIL ──
+rows.forEach(row=>{
+  row.addEventListener('click',e=>{
+    e.preventDefault();
+    const idx=row.dataset.idx;
+    const panel=document.querySelector(`.detail-panel[data-for="${idx}"]`);
+    if(!panel) return;
+
+    const isOpen=panel.classList.contains('open');
+
+    // Close all panels
+    document.querySelectorAll('.detail-panel.open').forEach(p=>{
+      if(p!==panel) p.classList.remove('open');
+    });
+
+    if(isOpen){
+      panel.classList.remove('open');
+    } else {
+      panel.classList.add('open');
+      // Scroll so row is near top
+      setTimeout(()=>{
+        const rect=row.getBoundingClientRect();
+        window.scrollBy({top:rect.top-72,behavior:'smooth'});
+      },50);
+    }
+  });
+});
+
+// ── CLOSE BTN ──
+document.querySelectorAll('.detail-close').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    btn.closest('.detail-panel').classList.remove('open');
+  });
+});
+
+// ── SCROLL REVEAL ──
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});
+},{threshold:0.06});
+rows.forEach(r=>io.observe(r));
+</script>
+</body>
+</html>
